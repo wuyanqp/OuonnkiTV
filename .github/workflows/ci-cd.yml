@@ -12,6 +12,8 @@ env:
   GITHUB_REGISTRY: ghcr.io
   DOCKER_REGISTRY: docker.io
   IMAGE_NAME: ouonnkitv
+  VITE_PROXY_URL: https://api.codetabs.com/v1/proxy?quest=
+  VITE_INITIAL_VIDEO_SOURCES: ''
 
 jobs:
   # 代码质量检查
@@ -25,12 +27,25 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          check-latest: true
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9.15.4
+          run_install: false
+
+      - name: Get pnpm store path
+        id: pnpm-store
+        run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-store.outputs.STORE_PATH }}
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -39,9 +54,10 @@ jobs:
         run: pnpm lint
 
       - name: Build project
-        run: pnpm build
+        run:
+          pnpm build
+          # end lint-and-test
 
-  # 构建和推送 Docker 镜像
   build-and-push:
     needs: lint-and-test
     runs-on: ubuntu-latest
@@ -49,20 +65,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-
-    strategy:
-      matrix:
-        registry:
-          - name: GitHub Container Registry
-            url: ghcr.io
-            username: ${{ github.actor }}
-            password: GITHUB_TOKEN
-          # 可选：Docker Hub（需要设置 secrets）
-          # - name: Docker Hub
-          #   url: docker.io
-          #   username: DOCKER_USERNAME
-          #   password: DOCKER_PASSWORD
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -70,18 +72,18 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to ${{ matrix.registry.name }}
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ${{ matrix.registry.url }}
-          username: ${{ matrix.registry.username }}
-          password: ${{ secrets[matrix.registry.password] }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ matrix.registry.url }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+          images: ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
@@ -103,8 +105,8 @@ jobs:
             BUILD_DATE=${{ github.event.head_commit.timestamp }}
             VCS_REF=${{ github.sha }}
             VERSION=${{ steps.meta.outputs.version }}
-            VITE_PROXY_URL=${{ vars.VITE_PROXY_URL || '/api/proxy?url=' }}
-            VITE_INITIAL_VIDEO_SOURCES=${{ vars.VITE_INITIAL_VIDEO_SOURCES || '' }}
+            VITE_PROXY_URL=${{ env.VITE_PROXY_URL }}
+            VITE_INITIAL_VIDEO_SOURCES=${{ env.VITE_INITIAL_VIDEO_SOURCES }}
 
   # 安全扫描（可选）
   security-scan:
