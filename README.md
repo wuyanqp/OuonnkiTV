@@ -42,11 +42,14 @@
   - [🛠 环境依赖](#-环境依赖)
   - [💻 本地开发](#-本地开发)
   - [📦 构建 \& 预览](#-构建--预览)
+  - [🐳 Docker 部署](#-docker-部署)
+    - [方式一：使用 Docker Compose（推荐）](#方式一使用-docker-compose推荐)
+    - [方式二：使用预构建镜像](#方式二使用预构建镜像)
 - [🔄 视频源导入功能](#-视频源导入功能)
   - [导入方式](#导入方式)
-    - [1. **本地文件导入** 📁](#1-本地文件导入-)
-    - [2. **JSON 文本导入** 📝](#2-json-文本导入-)
-    - [3. **URL 导入** 🌐](#3-url-导入-)
+    - [1. 本地文件导入 📁](#1-本地文件导入-)
+    - [2. JSON 文本导入 📝](#2-json-文本导入-)
+    - [3. URL 导入 🌐](#3-url-导入-)
   - [JSON格式说明](#json格式说明)
   - [使用步骤](#使用步骤)
 - [🌳 环境变量](#-环境变量)
@@ -173,23 +176,77 @@ pnpm run preview
 # 访问 http://localhost:4173
 ```
 
+### 🐳 Docker 部署
+
+#### 方式一：使用 Docker Compose（推荐）
+
+```bash
+# 1. 复制环境变量模板（可选）
+cp .env.docker .env
+
+# 2. 启动服务
+docker-compose up -d
+
+# 3. 访问应用
+# http://localhost:3000
+```
+
+**环境变量配置**（可选）：
+编辑 `.env` 文件来自定义配置：
+```bash
+# 代理服务器URL
+VITE_PROXY_URL=https://api.codetabs.com/v1/proxy?quest=
+
+# 初始视频源配置
+VITE_INITIAL_VIDEO_SOURCES=[{"name":"示例源","url":"https://api.example.com","isEnabled":true}]
+```
+
+#### 方式二：使用预构建镜像
+
+```bash
+# 拉取最新镜像
+docker pull ghcr.io/ouonnki/ouonnkitv:latest
+
+# 运行容器
+docker run -d -p 3000:80 \
+  -e VITE_PROXY_URL=https://api.codetabs.com/v1/proxy?quest= \
+  ghcr.io/ouonnki/ouonnkitv:latest
+```
+
+**可用镜像标签：**
+- `latest` - 最新稳定版
+- `main` - 主分支最新代码
+- `v1.0.0` - 指定版本
+
+**常用命令：**
+```bash
+# 查看日志
+docker-compose logs -f
+
+# 停止服务
+docker-compose down
+
+# 重启服务
+docker-compose restart
+```
+
 ## 🔄 视频源导入功能
 
 支持多种方式快速配置多个视频源：
 
 ### 导入方式
 
-#### 1. **本地文件导入** 📁
+#### 1. 本地文件导入 📁
 - 支持 JSON 格式文件
 - 拖拽或点击选择文件
 - 自动验证文件格式
 
-#### 2. **JSON 文本导入** 📝
+#### 2. JSON 文本导入 📝
 - 直接粘贴 JSON 配置
 - 实时语法检查
 - 支持多行格式化
 
-#### 3. **URL 导入** 🌐
+#### 3. URL 导入 🌐
 - 从远程 URL 获取配置
 - 支持 GitHub、Gitee 等代码托管平台
 - 自动处理网络请求
