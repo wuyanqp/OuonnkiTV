@@ -48,16 +48,10 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # 复制 nginx 配置文件
 COPY nginx.conf /etc/nginx/nginx.conf
 
-# 创建非特权用户（安全最佳实践）
-RUN addgroup -g 1001 -S nginx && \
-    adduser -S -D -H -u 1001 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
-
 # 暴露端口
 EXPOSE 80
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
-
-# 启动 nginx
+  CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1# 启动 nginx
 CMD ["nginx", "-g", "daemon off;"]
