@@ -313,6 +313,17 @@ VITE_PROXY_URL=https://cors.zme.ink/
 
 您可以通过环境变量预配置视频源，应用启动时会自动加载这些源。
 
+**支持 URL 配置：**
+除了直接填写 JSON 配置内容外，`VITE_INITIAL_VIDEO_SOURCES` 也支持填写一个包含视频源 JSON 的在线链接（如 GitHub Raw、Gitee、个人服务器等）。
+当检测到该环境变量为 URL 时，系统会自动拉取该链接内容作为初始视频源。
+
+**示例：**
+```env
+VITE_INITIAL_VIDEO_SOURCES=https://raw.githubusercontent.com/yourname/yourrepo/main/sources.json
+```
+
+该功能适用于需要集中维护、动态更新视频源配置的场景。
+
 #### 在 Vercel 中配置
 
 1. 在 Vercel 项目设置中找到 "Environment Variables"
