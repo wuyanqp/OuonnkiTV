@@ -25,8 +25,22 @@ export const PROXY_URL =
 export const M3U8_PATTERN = /\$https?:\/\/[^"'\s]+?\.m3u8/g
 
 // 从环境变量获取初始视频源
-export const getInitialVideoSources = () => {
-  const envSources = import.meta.env.VITE_INITIAL_VIDEO_SOURCES
+export const getInitialVideoSources = async () => {
+  let envSources = import.meta.env.VITE_INITIAL_VIDEO_SOURCES
+
+  // 验证url
+  try {
+    new URL(envSources.trim())
+    const response = await fetch(PROXY_URL + envSources.trim())
+    if (!response.ok) {
+      console.error(`无法获取视频源，HTTP状态: ${response.status}`)
+      return []
+    }
+    envSources = await response.text()
+  } catch {
+    // 不是URL，继续处理
+  }
+
   if (!envSources || typeof envSources !== 'string') {
     return []
   }

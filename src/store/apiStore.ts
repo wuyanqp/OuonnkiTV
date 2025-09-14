@@ -84,9 +84,9 @@ export const useApiStore = create<ApiStore>()(
           })
         },
 
-        initializeEnvSources: () => {
+        initializeEnvSources: async () => {
+          const envSources = await getInitialVideoSources()
           set(state => {
-            const envSources = getInitialVideoSources()
             if (envSources.length > 0) {
               // 只添加不存在的环境变量源
               envSources.forEach(envSource => {

@@ -13,6 +13,7 @@ import {
   Textarea,
   addToast,
 } from '@heroui/react'
+import { PROXY_URL } from '@/config/api.config'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useRef } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -188,7 +189,7 @@ export default function ImportSourceModal({ isOpen, onOpenChange }: ImportSource
     setIsImporting(true)
 
     try {
-      const response = await fetch(jsonUrl.trim())
+      const response = await fetch(PROXY_URL + jsonUrl.trim())
       if (!response.ok) {
         throw new Error(`获取文件失败: ${response.status} ${response.statusText}`)
       }

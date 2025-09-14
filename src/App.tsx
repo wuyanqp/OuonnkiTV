@@ -48,8 +48,13 @@ function App() {
 
   // 检查版本更新和初始化环境变量视频源
   useEffect(() => {
-    // 初始化环境变量中的视频源
-    initializeEnvSources()
+    // 检查是否需要初始化
+    const needsInitialization = localStorage.getItem('envSourcesInitialized') !== 'true'
+    if (needsInitialization) {
+      // 初始化环境变量中的视频源
+      initializeEnvSources()
+      localStorage.setItem('envSourcesInitialized', 'true')
+    }
 
     // 检查版本更新
     if (hasNewVersion()) {
