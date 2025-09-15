@@ -19,7 +19,7 @@ export default function Navigation() {
   }, [search])
   return (
     <motion.div
-      className="sticky top-0 z-50"
+      className="sticky top-0 z-50 flex justify-center"
       initial={{ y: -100, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{
@@ -28,7 +28,7 @@ export default function Navigation() {
         ease: 'easeOut',
       }}
     >
-      <Navbar>
+      <Navbar classNames={{ base: 'max-w-300', wrapper: 'max-w-300 p-2' }}>
         <NavbarBrand>
           <NavLink to="/" className="flex items-center gap-2">
             <motion.div layoutId="app-logo" className="flex items-end gap-2">

@@ -11,7 +11,7 @@ export default function Layout() {
       transition={{ duration: 0.3 }}
     >
       <Navigation />
-      <div className="h-full w-full">
+      <div className="mx-auto h-full max-w-300">
         <Outlet />
       </div>
     </motion.div>
