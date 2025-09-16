@@ -30,13 +30,16 @@ export default function Navigation() {
       }}
     >
       <Navbar classNames={{ wrapper: 'max-w-300 p-2' }}>
-        <NavbarBrand>
+        <NavbarBrand className="!flex-none">
           <NavLink to="/" className="flex items-center gap-2">
             <motion.div layoutId="app-logo" className="flex items-end gap-2">
               <motion.div layoutId="logo-icon">
                 <OkiLogo />
               </motion.div>
-              <motion.p layoutId="logo-text" className="text-lg font-bold text-inherit">
+              <motion.p
+                layoutId="logo-text"
+                className="hidden text-lg font-bold text-inherit md:block"
+              >
                 OUONNKI TV
               </motion.p>
             </motion.div>

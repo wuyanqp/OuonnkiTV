@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router'
 import { AnimatePresence } from 'framer-motion'
+import { Spinner } from '@heroui/spinner'
 
 const Layout = lazy(() => import('@/components/layouts/Layout'))
 const SearchResult = lazy(() => import('@/pages/SearchResult'))
@@ -12,7 +13,19 @@ function AnimatedRoutes({ children }: { children: React.ReactNode }) {
 
   return (
     <AnimatePresence mode="wait">
-      <Suspense fallback={<div>加载中...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex flex-col items-center py-40">
+            <Spinner
+              classNames={{ label: 'text-gray-500 text-sm' }}
+              variant="default"
+              size="lg"
+              color="default"
+              label="加载中..."
+            />
+          </div>
+        }
+      >
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={children} />
           <Route element={<Layout />}>

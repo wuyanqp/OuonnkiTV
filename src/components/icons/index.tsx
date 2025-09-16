@@ -2,6 +2,7 @@ import logoSvg from '@/assets/logo.svg'
 import recentSvg from '@/assets/recently.svg'
 import settingSvg from '@/assets/setting.svg'
 import NoItemSvg from '@/assets/noitem.svg'
+import NoResultSvg from '@/assets/noRes.svg'
 
 export const OkiLogo = ({ size = 36, ...props }: { size?: number }) => {
   return (
@@ -279,6 +280,19 @@ export const NoItemIcon = ({ size = 36, ...props }: { size?: number }) => {
       draggable={false}
       src={NoItemSvg}
       alt="No Item Icon"
+      width={size}
+      height={size}
+      {...props}
+    />
+  )
+}
+
+export const NoResultIcon = ({ size = 36, ...props }: { size?: number }) => {
+  return (
+    <img
+      draggable={false}
+      src={NoResultSvg}
+      alt="No Result Icon"
       width={size}
       height={size}
       {...props}

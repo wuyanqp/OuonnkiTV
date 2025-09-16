@@ -8,8 +8,6 @@ interface SearchState {
   query: string
   // 搜索历史记录
   searchHistory: SearchHistory
-  // 是否正在搜索
-  isSearching: boolean
 }
 
 interface SearchActions {
@@ -23,8 +21,6 @@ interface SearchActions {
   removeSearchHistoryItem: (id: string) => void
   // 清空搜索历史
   clearSearchHistory: () => void
-  // 设置搜索状态
-  setIsSearching: (isSearching: boolean) => void
 }
 
 type SearchStore = SearchState & SearchActions
@@ -36,7 +32,6 @@ export const useSearchStore = create<SearchStore>()(
         // 初始状态
         query: '',
         searchHistory: [],
-        isSearching: false,
 
         // Actions
         setQuery: (query: string) => {
@@ -89,12 +84,6 @@ export const useSearchStore = create<SearchStore>()(
         clearSearchHistory: () => {
           set(state => {
             state.searchHistory = []
-          })
-        },
-
-        setIsSearching: (isSearching: boolean) => {
-          set(state => {
-            state.isSearching = isSearching
           })
         },
       })),
