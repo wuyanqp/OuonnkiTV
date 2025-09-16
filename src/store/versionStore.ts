@@ -51,6 +51,18 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
+    version: '1.2.3',
+    title: '样式优化/Docker部署',
+    date: formatDate('2025-09-16'),
+    features: [
+      '优化搜索结果页面视觉效果，添加图片懒加载',
+      '导入过程自动进行 JSON 格式与字段校验，提供清晰错误提示',
+      '添加自动同步主仓库',
+    ],
+    fixes: ['修复闪屏问题', '修复 Docker 部署时部分环境变量未生效的问题'],
+    breaking: ['重构历史观看记录数据结构，旧数据将被清除'],
+  },
+  {
     version: '1.2.2',
     title: '新增视频源导入',
     date: formatDate('2025-08-31'),
