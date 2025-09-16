@@ -4,7 +4,8 @@ import { apiService } from '@/services/api.service'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { type VideoItem } from '@/types'
 import { useApiStore } from '@/store/apiStore'
-import { Card, CardFooter, Image, CardHeader, Chip } from '@heroui/react'
+import { Card, CardFooter, CardHeader, Chip } from '@heroui/react'
+import { Image } from '@heroui/image'
 import { Spinner } from '@heroui/spinner'
 import { NoResultIcon } from '@/components/icons'
 
@@ -17,10 +18,6 @@ export default function SearchResult() {
   const { search, setSearch, searchMovie } = useSearch()
   const [searchRes, setSearchRes] = useState<VideoItem[]>([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    console.log('变化了:', loading)
-  }, [loading])
 
   const selectedAPIs = useMemo(() => {
     return videoAPIs.filter(api => api.isEnabled)
@@ -51,11 +48,6 @@ export default function SearchResult() {
           newResults => {
             setSearchRes(prevResults => {
               const allResults = [...prevResults, ...newResults]
-              allResults.sort((a, b) => {
-                const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
-                if (nameCompare !== 0) return nameCompare
-                return (a.source_name || '').localeCompare(b.source_name || '')
-              })
               return allResults
             })
           },
@@ -101,7 +93,7 @@ export default function SearchResult() {
               isPressable
               isFooterBlurred
               onPress={() => handleCardClick(item)}
-              className="w-full border-none transition-transform hover:scale-103"
+              className="h-[27vh] w-full border-none transition-transform hover:scale-103 lg:h-[35vh]"
               radius="lg"
             >
               <CardHeader className="absolute top-1 z-10 flex-col items-start p-3">
@@ -122,6 +114,7 @@ export default function SearchResult() {
               <Image
                 removeWrapper
                 isZoomed
+                isBlurred
                 loading="lazy"
                 alt={item.vod_name}
                 className="z-0 h-full object-cover"
