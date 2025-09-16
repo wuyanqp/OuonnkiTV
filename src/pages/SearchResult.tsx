@@ -20,55 +20,54 @@ export default function SearchResult() {
     return videoAPIs.filter(api => api.isEnabled)
   }, [videoAPIs])
 
-  // 调用搜索内容
-  const fetchSearchRes = async () => {
-    if (!search) return
-    // 取消上一次未完成的搜索
-    abortCtrlRef.current?.abort()
-    const controller = new AbortController()
-    abortCtrlRef.current = controller
-    setLoading(true)
-    setSearchRes([])
-    try {
-      await apiService.aggregatedSearch(
-        search,
-        selectedAPIs,
-        newResults => {
-          setSearchRes(prevResults => {
-            const allResults = [...prevResults, ...newResults]
-            allResults.sort((a, b) => {
-              const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
-              if (nameCompare !== 0) return nameCompare
-              return (a.source_name || '').localeCompare(b.source_name || '')
-            })
-            return allResults
-          })
-        },
-        controller.signal,
-      )
-    } catch (error) {
-      if ((error as Error).name === 'AbortError') {
-        console.log('搜索已取消')
-      } else {
-        console.error('搜索时发生错误:', error)
-      }
-    } finally {
-      setLoading(false)
-    }
-  }
-
   useEffect(() => {
-    if (query && query !== search) {
+    if (query && search === '') {
       setSearch(query)
-      searchMovie(query)
+      searchMovie(query, false)
     }
-  }, [query])
+  }, [query, search, setSearch, searchMovie])
 
   useEffect(() => {
+    // 调用搜索内容
+    const fetchSearchRes = async () => {
+      if (!search) return
+      // 取消上一次未完成的搜索
+      abortCtrlRef.current?.abort()
+      const controller = new AbortController()
+      abortCtrlRef.current = controller
+      setLoading(true)
+      setSearchRes([])
+      try {
+        await apiService.aggregatedSearch(
+          search,
+          selectedAPIs,
+          newResults => {
+            setSearchRes(prevResults => {
+              const allResults = [...prevResults, ...newResults]
+              allResults.sort((a, b) => {
+                const nameCompare = (a.vod_name || '').localeCompare(b.vod_name || '')
+                if (nameCompare !== 0) return nameCompare
+                return (a.source_name || '').localeCompare(b.source_name || '')
+              })
+              return allResults
+            })
+          },
+          controller.signal,
+        )
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') {
+          console.log('搜索已取消')
+        } else {
+          console.error('搜索时发生错误:', error)
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
     if (search) {
       fetchSearchRes()
     }
-  }, [search])
+  }, [search, selectedAPIs])
 
   // 组件卸载时取消未完成的搜索
   useEffect(() => {
@@ -87,25 +86,15 @@ export default function SearchResult() {
 
   return (
     <div className="p-4">
-      {/* 搜索信息 */}
-      <div className="mb-4">
-        <h2 className="text-2xl font-bold">
-          搜索 "{search}" 的结果
-          {searchRes && ` (${searchRes.length}个)`}
-        </h2>
-        <p className="mt-1 text-sm text-gray-600">搜索结果来自 {selectedAPIs.length} 个源</p>
-        {loading && <p className="mt-2 text-gray-500">正在从各资源站玩命搜索中...</p>}
-      </div>
-
       {/* 搜索结果网格 */}
-      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 xl:grid-cols-4">
         {searchRes?.map((item, index) => (
           <Card
             key={`${item.source_code}_${item.vod_id}_${index}`}
             isPressable
             isFooterBlurred
             onPress={() => handleCardClick(item)}
-            className="w-full border-none transition-transform hover:scale-105"
+            className="w-full border-none transition-transform hover:scale-103"
             radius="lg"
           >
             <CardHeader className="absolute top-1 z-10 flex-col items-start p-3">
@@ -125,13 +114,15 @@ export default function SearchResult() {
             </CardHeader>
             <Image
               removeWrapper
+              isZoomed
+              loading="lazy"
               alt={item.vod_name}
-              className="z-0 h-[320px] w-full object-cover"
+              className="z-0 h-full object-cover"
               src={
                 item.vod_pic || 'https://placehold.jp/30/ffffff/000000/300x450.png?text=暂无封面'
               }
             />
-            <CardFooter className="rounded-large shadow-small absolute bottom-1 z-10 ml-1 w-[calc(100%_-_8px)] justify-between overflow-hidden border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
+            <CardFooter className="rounded-large shadow-small absolute bottom-1 z-10 ml-1 min-h-[8vh] w-[calc(100%_-_8px)] justify-between overflow-hidden border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
               <div className="flex flex-grow flex-col gap-1 px-1">
                 <p className="text-tiny text-white/80">
                   {item.type_name} · {item.vod_year}

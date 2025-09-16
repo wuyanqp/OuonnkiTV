@@ -1,6 +1,6 @@
 import { Navbar, NavbarBrand, NavbarContent, Input } from '@heroui/react'
 import { OkiLogo, SearchIcon } from '@/components/icons'
-import { NavLink } from 'react-router'
+import { NavLink, useLocation } from 'react-router'
 import { useSearch } from '@/hooks'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
@@ -9,9 +9,10 @@ import RecentHistory from '@/components/RecentHistory'
 export default function Navigation() {
   const { search, searchMovie } = useSearch()
   const [inputContent, setInputContent] = useState('')
+  const location = useLocation()
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
-      searchMovie(inputContent)
+      searchMovie(inputContent, !location.pathname.startsWith('/search/'))
     }
   }
   useEffect(() => {
@@ -28,7 +29,7 @@ export default function Navigation() {
         ease: 'easeOut',
       }}
     >
-      <Navbar classNames={{ base: 'max-w-300', wrapper: 'max-w-300 p-2' }}>
+      <Navbar classNames={{ wrapper: 'max-w-300 p-2' }}>
         <NavbarBrand>
           <NavLink to="/" className="flex items-center gap-2">
             <motion.div layoutId="app-logo" className="flex items-end gap-2">
