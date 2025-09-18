@@ -2,7 +2,11 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 禁止移动端缩放：注意会影响无障碍可访问性（视力障碍用户无法放大） -->
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no"
+    />
     <title>Ouonnki TV</title>
 
     <!-- Favicon -->
@@ -17,6 +21,16 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      /* 额外保险（主要针对旧版 iOS Safari 的双指/三指手势） */
+      document.addEventListener(
+        'gesturestart',
+        function (e) {
+          e.preventDefault()
+        },
+        { passive: false },
+      )
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
