@@ -51,6 +51,14 @@ const formatDate = (dateStr: string) => {
 // 版本更新历史
 const VERSION_UPDATES: VersionUpdate[] = [
   {
+    version: '1.2.4',
+    title: '分页功能上线',
+    date: formatDate('2025-09-18'),
+    features: ['添加分页功能，优化搜索结果展示和加载体验'],
+    fixes: [],
+    breaking: [],
+  },
+  {
     version: '1.2.3',
     title: '样式优化/Docker部署',
     date: formatDate('2025-09-16'),
