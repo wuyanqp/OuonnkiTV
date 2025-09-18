@@ -207,7 +207,7 @@ export default function SearchResult() {
               classNames={paginationTheme}
               onChange={onPageChange}
               showControls
-              size="md"
+              size={window.innerWidth < 640 ? 'sm' : 'lg'}
               initialPage={1}
               total={paginationRes.length}
             />
