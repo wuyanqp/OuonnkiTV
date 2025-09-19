@@ -185,7 +185,7 @@ export default function SearchResult() {
       {/* 搜索结果网格 */}
       {!loading && paginationRes[curPage - 1]?.length > 0 && (
         <div className="flex flex-col items-center gap-10">
-          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-[4vw] sm:grid-cols-3 md:gap-[2vw] xl:grid-cols-4">
             {paginationRes[curPage - 1]?.map((item: VideoItem, index: number) => (
               <Card
                 key={`${item.source_code}_${item.vod_id}_${index}`}
@@ -250,7 +250,7 @@ export default function SearchResult() {
 
       {/* 加载中 */}
       {loading && (
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 gap-[4vw] sm:grid-cols-3 md:gap-[2vw] xl:grid-cols-4">
           {new Array(PaginationConfig.singlePageSize).fill(null).map((_, index: number) => (
             <Card
               key={index}
