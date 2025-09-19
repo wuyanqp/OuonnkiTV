@@ -4,7 +4,16 @@ import { apiService } from '@/services/api.service'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { type VideoItem } from '@/types'
 import { useApiStore } from '@/store/apiStore'
-import { Card, CardFooter, CardHeader, Chip, Image, Spinner, Pagination } from '@heroui/react'
+import {
+  Card,
+  CardFooter,
+  CardHeader,
+  Chip,
+  Image,
+  addToast,
+  Pagination,
+  Skeleton,
+} from '@heroui/react'
 import { NoResultIcon } from '@/components/icons'
 import { PaginationConfig } from '@/config/video.config'
 
@@ -53,8 +62,8 @@ export default function SearchResult() {
       const controller = new AbortController()
       abortCtrlRef.current = controller
       setSearchRes([])
-      try {
-        await apiService.aggregatedSearch(
+      const searchPromise = apiService
+        .aggregatedSearch(
           search,
           selectedAPIs,
           newResults => {
@@ -66,14 +75,38 @@ export default function SearchResult() {
           },
           controller.signal,
         )
-        setLoading(false)
-      } catch (error) {
-        if ((error as Error).name === 'AbortError') {
-          console.log('搜索已取消')
-        } else {
-          console.error('搜索时发生错误:', error)
-        }
-      }
+        .then(allResults => {
+          addToast({
+            title: '全部内容搜索完成！总计 ' + allResults.length + ' 条结果',
+            radius: 'lg',
+            color: 'success',
+            timeout: 2000,
+            classNames: {
+              base: 'bg-white/60 backdrop-blur-lg border-0',
+            },
+          })
+        })
+        .catch(error => {
+          if ((error as Error).name === 'AbortError') {
+            console.error('搜索已取消:', error)
+          } else {
+            console.error('搜索时发生错误:', error)
+          }
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+
+      addToast({
+        title: '持续搜索内容中......',
+        promise: searchPromise,
+        radius: 'lg',
+        timeout: 1,
+        hideCloseButton: true,
+        classNames: {
+          base: 'bg-white/60 backdrop-blur-lg border-0',
+        },
+      })
     }
     if (search) {
       fetchSearchRes()
@@ -159,7 +192,7 @@ export default function SearchResult() {
                 isPressable
                 isFooterBlurred
                 onPress={() => handleCardClick(item)}
-                className="h-[27vh] w-full border-none transition-transform hover:scale-103 lg:h-[35vh]"
+                className="flex h-[27vh] w-full items-center border-none transition-transform hover:scale-103 lg:h-[35vh]"
                 radius="lg"
               >
                 <CardHeader className="absolute top-1 z-10 flex-col items-start p-3">
@@ -185,13 +218,13 @@ export default function SearchResult() {
                   isBlurred
                   loading="lazy"
                   alt={item.vod_name}
-                  className="z-0 h-full object-cover"
+                  className="z-0 h-full w-full object-cover"
                   src={
                     item.vod_pic ||
                     'https://placehold.jp/30/ffffff/000000/300x450.png?text=暂无封面'
                   }
                 />
-                <CardFooter className="rounded-large shadow-small absolute bottom-1 z-10 ml-1 min-h-[8vh] w-[calc(100%_-_8px)] justify-between overflow-hidden border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
+                <CardFooter className="rounded-large shadow-small absolute bottom-[3%] z-10 min-h-[8vh] w-[92%] justify-between overflow-hidden border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
                   <div className="flex flex-grow flex-col gap-1 px-1">
                     <p className="text-tiny text-white/80">
                       {item.type_name} · {item.vod_year}
@@ -217,14 +250,24 @@ export default function SearchResult() {
 
       {/* 加载中 */}
       {loading && (
-        <div className="flex flex-col items-center py-40">
-          <Spinner
-            classNames={{ label: 'text-gray-500 text-sm' }}
-            variant="wave"
-            size="lg"
-            color="default"
-            label="搜索中..."
-          />
+        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 xl:grid-cols-4">
+          {new Array(PaginationConfig.singlePageSize).fill(null).map((_, index: number) => (
+            <Card
+              key={index}
+              isPressable
+              isFooterBlurred
+              className="flex h-[27vh] w-full items-center border-none transition-transform hover:scale-103 lg:h-[35vh]"
+              radius="lg"
+            >
+              <Skeleton className="mt-[5%] h-[59%] w-[90%] rounded-lg md:h-[66%]" />
+              <CardFooter className="shadow-small absolute bottom-[4%] z-10 min-h-[8vh] w-[90%] justify-between overflow-hidden rounded-lg border-1 border-white/20 py-2 backdrop-blur before:rounded-xl before:bg-white/10">
+                <div className="flex flex-grow flex-col gap-3 px-1">
+                  <Skeleton className="h-4 w-full rounded-lg md:h-5 md:w-[40%]" />
+                  <Skeleton className="h-4 w-full rounded-lg md:h-5 md:w-[60%]" />
+                </div>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
       )}
 
