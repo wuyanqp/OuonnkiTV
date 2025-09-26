@@ -266,8 +266,12 @@ function App() {
             </motion.div>
           )}
         </div>
-        <Analytics />
-        <SpeedInsights />
+        {import.meta.env.VITE_DISABLE_ANALYTICS !== 'true' && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </motion.div>
     </>
   )
