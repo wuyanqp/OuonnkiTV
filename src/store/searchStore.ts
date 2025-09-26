@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import type { SearchHistory, SearchHistoryItem } from '@/types'
+import { v4 as uuidv4 } from 'uuid'
 
 interface SearchState {
   // 当前搜索查询
@@ -58,7 +59,7 @@ export const useSearchStore = create<SearchStore>()(
             } else {
               // 添加新项到历史记录开头
               const newItem: SearchHistoryItem = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 content,
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
